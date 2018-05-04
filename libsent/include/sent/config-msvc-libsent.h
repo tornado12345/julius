@@ -1,5 +1,5 @@
 /* Version string */
-#define LIBSENT_VERSION "4.4.2"
+#define LIBSENT_VERSION "4.4.2.1"
 
 /* Audio API name */
 #define AUDIO_API_NAME "pa-dsound"
@@ -123,11 +123,13 @@
 
 /* define SIMD definitions from compiler defs to automatically choose
    one according to compiler setting (no runtime dispatch) on VisualStudio */
-#if defined(__FMA__)
+#if _MSC_FULL_VER >= 180030723
+/* compiler supports AVX2 instructions */
 #define HAS_SIMD_FMA
-#elif defined(__AVX__)
 #define HAS_SIMD_AVX
-#elif defined(__SSE__)
+#define HAS_SIMD_SSE
+#else
+#define HAS_SIMD_AVX
 #define HAS_SIMD_SSE
 #endif
 

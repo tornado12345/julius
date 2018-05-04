@@ -37,7 +37,7 @@
 #define JULIUS_PRODUCTNAME "JuliusLib"
 
 /// Version string
-#define JULIUS_VERSION "4.4.2"
+#define JULIUS_VERSION "4.4.2.1"
 
 /// Engine setting (value of "--enable-setup=...").
 #define JULIUS_SETUP "fast"
@@ -45,6 +45,8 @@
 /// Compilation host information 
 #define JULIUS_HOSTINFO "i686-pc-msvc"
 
+/// Build information
+#define JULIUS_BUILD_INFO "msvc"
 
 /* Define to empty if the keyword does not work.  */
 /* #undef const */

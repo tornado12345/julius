@@ -56,7 +56,7 @@ Version 4.4 supports stand-alone DNN-HMM support, and several new
 tools and bug fixes are included.  See the "Release.txt" file for the
 full list of updates.  Run with "-help" to see full list of options.
 
-# Toolkit and Assets
+# Tools and Assets
 
 There are also toolkit and assets to run Julius.  They are maintained by the Julius development team.  You can get them fron the following Github pages:
 
@@ -72,6 +72,10 @@ Documents, sample files and conversion tools to use and build a recognition gram
 
 This is a handy toolkit to do phoneme segmentation (aka phoneme alignments) for speech audio file using Julius. Given pairs of speech audio file and its transcription, this toolkit perform Viterbi alignment to get the beginning and ending time of each phoneme.  This toolkit is available at [its GitHub page](https://github.com/julius-speech/segmentation-kit).
 
+## [Prompter](https://github.com/julius-speech/prompter)
+
+Prompter is a perl/Tkx based tiny program that displays recognition results of Julius in a scrolling caption style.
+
 # About Models
 
 Since Julius itself is a language-independent decoding program, you can make a recognizer of a language if given an appropriate language model and acoustic model for the target language. The recognition accuracy largely depends on the models. Julius adopts acoustic models in HTK ascii format, pronunciation dictionary in almost HTK format, and word 3-gram language models in ARPA standard format (forward 2-gram and reverse N-gram trained from same corpus).
@@ -86,9 +90,11 @@ Japanese language model (60k-word trained by balanced corpus) and acoustic model
 
 ## English
 
-We currently only have a sample English acoustic model trained from the WSJ database. According to the license of the database, this model *cannot* be used to develop or test products for commercialization, nor can they use it in any commercial product or for any commercial purpose. Also, the performance is not so good. Please contact to us for further information.
+There are some user-contributed English models for Julius available on the Web.
 
-The VoxForge-project is working on the creation of an open-source acoustic model for the English language.
+[JuliusModels](https://sourceforge.net/projects/juliusmodels/) hosts English and Polish models for Julius.  All of the models are based on HTK modelling software and data sets available freely on the Internet.  They can be downloaded from a project website which I created for this purpose.  Please note that DNN version of these models require minor changes which the author included in a modified version of Julius on Github at https://github.com/palles77/julius .
+
+The [VoxForge-project](http://www.voxforge.org/) is working on the creation of an open-source acoustic model for the English language.
 If you have any language or acoustic model that can be distributed as a freeware, would you please contact us? We want to run dictation kit on various languages other than Japanese, and share them freely to provide a free speech recognition system available for various languages.
 
 # Documents
