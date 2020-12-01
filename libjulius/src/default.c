@@ -154,6 +154,7 @@ jconf_set_default_values_am(JCONF_AM *j)
   j->analysis.cmn_update		= TRUE;
   j->analysis.cmnsave_filename		= NULL;
   j->analysis.cmn_map_weight		= 100.0;
+  j->analysis.cmn_static_cvn_only	= FALSE;
   j->frontend.ss_alpha			= DEF_SSALPHA;
   j->frontend.ss_floor			= DEF_SSFLOOR;
   j->frontend.sscalc			= FALSE;
@@ -174,8 +175,10 @@ jconf_set_default_values_am(JCONF_AM *j)
   j->dnn.output_bfile                   = NULL;
   j->dnn.priorfile                      = NULL;
   j->dnn.prior_factor                   = 1.0;
+  j->dnn.prior_factor_log10nize         = TRUE;
   j->dnn.batchsize                      = 1;
   j->dnn.num_threads                    = 2;
+  j->dnn.cuda_mode                      = NULL;
 }
 
 /** 

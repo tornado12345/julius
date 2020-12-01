@@ -188,7 +188,7 @@ print_mfcc_info(FILE *fp, MFCCCalc *mfcc, Jconf *jconf)
 	jlog("   beginning data weight = %6.2f\n", mfcc->cmn.map_weight);
       }
     } else {
-      if (mfcc->cmn.loaded) {
+      if (mfcc->cmn.loaded && mfcc->cmn.static_cvn_only == FALSE) {
 	jlog("with a static mean\n");
 	jlog("   static mean from file = %s\n", mfcc->cmn.load_filename);
       } else {
@@ -407,6 +407,11 @@ print_engine_info(Recog *recog)
       jlog("      # of hidden layers = %d\n", am->dnn->hnum);
       jlog("       hidden layer dim. = %d\n", am->dnn->hiddennodenum);
       jlog("      state prior factor = %f\n", am->dnn->prior_factor);
+      if (am->config->dnn.prior_factor_log10nize) {
+	jlog("   state prior log10nize = on\n");
+      } else {
+	jlog("   state prior log10nize = off\n");
+      }
       jlog("              batch size = %d\n", am->dnn->batch_size);
       jlog("       number of threads = %d\n", am->dnn->num_threads);
     }
@@ -447,6 +452,10 @@ print_engine_info(Recog *recog)
 	  if (debug2_flag) {
 	    print_dfa_cp(fp, lm->dfa);
 	    jlog("\n");
+	  }
+	  if (lm->dfa_forward) {
+	    jlog(" additional forward");
+	    print_dfa_info(fp, lm->dfa_forward); jlog("\n");
 	  }
 	}
       } else if (lm->lmvar == LM_DFA_WORD) {

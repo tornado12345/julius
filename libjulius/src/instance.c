@@ -71,6 +71,7 @@ j_mfcccalc_new(JCONF_AM *amconf)
     mfcc->cmn.update = amconf->analysis.cmn_update;
     mfcc->cmn.save_filename = amconf->analysis.cmnsave_filename;
     mfcc->cmn.map_weight = amconf->analysis.cmn_map_weight;
+    mfcc->cmn.static_cvn_only = amconf->analysis.cmn_static_cvn_only;
     mfcc->frontend.ss_alpha = amconf->frontend.ss_alpha;
     mfcc->frontend.ss_floor = amconf->frontend.ss_floor;
     mfcc->frontend.sscalc = amconf->frontend.sscalc;
@@ -242,6 +243,7 @@ j_process_lm_free(PROCESS_LM *lm)
   if (lm->ngram) ngram_info_free(lm->ngram);
   if (lm->grammars) multigram_free_all(lm->grammars);
   if (lm->dfa) dfa_info_free(lm->dfa);
+  if (lm->dfa_forward) dfa_info_free(lm->dfa_forward);
   /* not free lm->jconf  */
   free(lm);
 }
@@ -391,6 +393,8 @@ j_jconf_am_free(JCONF_AM *amconf)
     free(amconf->dnn.output_bfile);
   if (amconf->dnn.priorfile)
     free(amconf->dnn.priorfile);
+  if (amconf->dnn.cuda_mode)
+    free(amconf->dnn.cuda_mode);
   free(amconf);
 }
 

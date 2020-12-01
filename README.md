@@ -1,14 +1,11 @@
-(Moved from julius.osdn.jp since 2015/09, this is official)
-(Since 2019/1/2, master has UTF-8-purified codes. We are still keeping the snap of old encoding at 4.5 release at branch "master-4.5-legacy".)
-
 Julius: Open-Source Large Vocabulary Continuous Speech Recognition Engine
 ==========================================================================
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2530396.svg)](https://doi.org/10.5281/zenodo.2530396)
 
-Copyright (c) 1991-2019 [Kawahara Lab., Kyoto University](http://sap.ist.i.kyoto-u.ac.jp/)
-Copyright (c) 2005-2019 [Julius project team, Lee Lab., Nagoya Institute of Technology](http://www.slp.nitech.ac.jp/)
-Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan
-Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
+Copyright (c) 1991-2020 [Kawahara Lab., Kyoto University](http://sap.ist.i.kyoto-u.ac.jp/)  
+Copyright (c) 2005-2020 [Julius project team, Lee Lab., Nagoya Institute of Technology](http://www.slp.nitech.ac.jp/)  
+Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan  
+Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology  
 
 # About Julius
 
@@ -20,10 +17,9 @@ Julius has been developed as a research software for Japanese LVCSR since 1997, 
 
 The main developer / maintainer is Akinobu Lee (ri@nitech.ac.jp).
 
-
 # Features
 
-- An open-source LVCSR software (see [terms and conditions of license](https://github.com/julius-speech/julius/blob/master/LICENSE.txt).)
+- An open-source LVCSR software (BSD 3-clause license).
 - Real-time, hi-speed, accurate recognition based on 2-pass strategy.
 - Low memory requirement: less than 32MBytes required for work area (<64MBytes for 20k-word dictation with on-memory 3-gram LM).
 - Supports LM of N-gram with arbitrary N.  Also supports rule-based grammar, and word list for isolated word recognition.
@@ -49,16 +45,117 @@ The main developer / maintainer is Akinobu Lee (ri@nitech.ac.jp).
   - (Rev. 4) User-defined LM function embedding
 - DNN-based decoding, using front-end module for frame-wise state probability calculation for flexibility.
 
-# Download Julius
+# Quick Run
 
-The latest release version is [4.5](https://github.com/julius-speech/julius/releases), released on Janualy 2, 2019.
+How to test English dictation with Julius and English DNN model.  The procedure is for Linux but almost the same for other OS.
+
+(For Japanese dictation, Use [dictation kit](https://github.com/julius-speech/julius#japanese-dictation-kit))
+
+## 1. Build latest Julius
+
+```shell
+% sudo apt-get install build-essential zlib1g-dev libsdl2-dev libasound2-dev
+% git clone https://github.com/julius-speech/julius.git
+% cd julius
+% ./configure --enable-words-int
+% make -j4
+% ls -l julius/julius
+-rwxr-xr-x 1 ri lab 746056 May 26 13:01 julius/julius
+```
+
+## 2. Get English DNN model
+
+Go to [JuliusModel](https://sourceforge.net/projects/juliusmodels/files/) page and download the English model(LM+DNN-HMM) named "`ENVR-v5.4.Dnn.Bin.zip`".  Unzip it and cd to there.
+
+```shell
+% cd ..
+% unzip /some/where/ENVR-v5.4.Dnn.Bin.zip
+% cd ENVR-v5.4.Dnn.Bin
+```
+
+## 3. Modify config file
+
+Edit the `dnn.jconf` file in the unzipped folder to fit the latest version of Julius:
+
+```text
+(edit dnn.jconf)
+@@ -1,5 +1,5 @@
+ feature_type MFCC_E_D_A_Z
+-feature_options -htkconf wav_config -cvn -cmnload ENVR-v5.3.norm -cmnstatic
++feature_options -htkconf wav_config -cvn -cmnload ENVR-v5.3.norm -cvnstatic
+ num_threads 1
+ feature_len 48
+ context_len 11
+@@ -21,3 +21,4 @@
+ output_B ENVR-v5.3.layerout_bias.npy
+ state_prior_factor 1.0
+ state_prior ENVR-v5.3.prior
++state_prior_log10nize false
+```
+
+## 4. Recognize audio file
+
+Recognize "`mozilla.wav`" included in the zip file.
+
+```shell
+% ../julius/julius/julius -C julius.jconf -dnnconf dnn.jconf
+```
+
+You'll get tons of messages, but the final result of the first speech part will be output like this:
+
+```
+sentence1: <s> without the data said the article was useless </s>
+wseq1: <s> without the data said the article was useless </s>
+phseq1: sil | w ih dh aw t | dh ax | d ae t ah | s eh d | dh iy | aa r t ah k ah l | w ax z | y uw s l ah s | sil
+cmscore1: 0.785 0.892 0.318 0.284 0.669 0.701 0.818 0.103 0.528 1.000
+score1: 261.947144
+```
+
+"`test.dbl`" contains list of audio files to be recognized.  Edit the file and run again to test with another files.
+
+## 5. Run with live microphone input
+
+To run Julius on live microphone input, save the following text as "`mic.jconf`".
+
+```text
+-input mic
+-htkconf wav_config
+-h ENVR-v5.3.am
+-hlist ENVR-v5.3.phn
+-d ENVR-v5.3.lm
+-v ENVR-v5.3.dct
+-b 4000
+-lmp 12 -6
+-lmp2 12 -6
+-fallback1pass
+-multipath
+-iwsp
+-iwcd1 max
+-spmodel sp
+-no_ccd
+-sepnum 150
+-b2 360
+-n 40
+-s 2000
+-m 8000
+-lookuprange 5
+-sb 80
+-forcedict
+```
+
+and run Julius with the mic.jconf instead of julius.jconf
+
+```shell
+% ../julius/julius/julius -C mic.jconf -dnnconf dnn.jconf
+```
+
+# Download
+
+The latest release version is [4.6](https://github.com/julius-speech/julius/releases), released on September 2, 2020.
 You can get the released package from the [Release page](https://github.com/julius-speech/julius/releases).
+See the "Release.txt" file for full list of updates.  Run with "-help" to see full list of options.
 
-Version 4.4 supports stand-alone DNN-HMM support, and several new
-tools and bug fixes are included.  See the "Release.txt" file for the
-full list of updates.  Run with "-help" to see full list of options.
-
-# Install
+# Install / Build Julius
 
 Follow the instructions in [INSTALL.txt](https://github.com/julius-speech/julius/blob/master/INSTALL.txt).
 
@@ -113,9 +210,11 @@ Recent documents:
     [Options](https://github.com/julius-speech/julius/blob/master/doc/Options.md),
     [Audio](https://github.com/julius-speech/julius/blob/master/doc/Audio.md),
     [Feature](https://github.com/julius-speech/julius/blob/master/doc/Feature.md),
-    [Audio](https://github.com/julius-speech/julius/blob/master/doc/Audio.md)
-    [VAD](https://github.com/julius-speech/julius/blob/master/doc/VAD.md).
-- All options are listed in [Sample.jconf](https://github.com/julius-speech/julius/blob/master/Sample.jconf) and also be output when invoked "julius --help".
+    [Vector Input](https://github.com/julius-speech/julius/blob/master/doc/VectorInput.md),
+    [VAD](https://github.com/julius-speech/julius/blob/master/doc/VAD.md),
+    [Normalization](https://github.com/julius-speech/julius/blob/master/doc/Normalize.md),
+    [Input Rejection](https://github.com/julius-speech/julius/blob/master/doc/Rejection.md).
+- All options are fully described at [Options](https://github.com/julius-speech/julius/blob/master/doc/Options.md), also listed in sample configuration file [Sample.jconf](https://github.com/julius-speech/julius/blob/master/Sample.jconf), also be output when invoked with "julius --help".
 - Full history and short descriptions are in [Release Notes](https://github.com/julius-speech/julius/blob/master/Release.txt) ([JP version](https://github.com/julius-speech/julius/blob/master/Release-ja.txt))
 - For DNN-HMM, take a look at [00readme-DNN.txt](https://github.com/julius-speech/julius/blob/master/00readme-HNN.txt) for how-to and [Sample.dnnconf](https://github.com/julius-speech/julius/blob/master/Sample.dnnconf) as example.
 
@@ -134,8 +233,7 @@ Other, old documents:
   - A. Lee, T. Kawahara and K. Shikano. "Julius --- an open source real-time large vocabulary recognition engine." In Proc. European Conference on Speech Communication and Technology (EUROSPEECH), pp. 1691--1694, 2001.
   - T. Kawahara, A. Lee, T. Kobayashi, K. Takeda, N. Minematsu, S. Sagayama, K. Itou, A. Ito, M. Yamamoto, A. Yamada, T. Utsuro and K. Shikano. "Free software toolkit for Japanese large vocabulary continuous speech recognition." In Proc. Int'l Conf. on Spoken Language Processing (ICSLP) , Vol. 4, pp. 476--479, 2000.
 
-
-# Moving to UTF-8
+# Moved to UTF-8
 
 We are going to move to UTF-8.
 
@@ -148,3 +246,21 @@ encoding codes at branch "master-4.5-legacy".  The branch keeps legacy
 encoding version of version 4.5.  If you want to inspect the code
 progress before the release of 4.5 (2019/1/2), please checkout the
 branch.
+
+# License and Citation
+
+This code is made available under the modified BSD License (BSD-3-Clause License).
+
+Over and above the legal restrictions imposed by this license, when you publish or present results by using this software, we would highly appreciate if you mention the use of "Large Vocabulary Continuous Speech Recognition Engine Julius" and provide proper reference or citation so that readers can easily access the information of the software. This would help boost the visibility of Julius and then further enhance Julius and the related software.
+
+Citation to this software can be a paper that describes it,
+
+> A. Lee, T. Kawahara and K. Shikano. "Julius --- An Open Source Real-Time Large Vocabulary Recognition Engine".  In Proc. EUROSPEECH, pp.1691--1694, 2001.
+
+> A. Lee and T. Kawahara. "Recent Development of Open-Source Speech Recognition Engine Julius" Asia-Pacific Signal and Information Processing Association Annual Summit and Conference (APSIPA ASC), 2009.
+
+or a direct citation to this software,
+
+> A. Lee and T. Kawahara: Julius v4.5 (2019) https://doi.org/10.5281/zenodo.2530395
+
+or both.

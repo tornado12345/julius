@@ -176,6 +176,10 @@ typedef struct __jconf_am__ {
      * CMN: MAP weight for initial cepstral mean on (-cmnmapweight)
      */
     float cmn_map_weight;
+    /**
+     * CMN: TRUE if static CMN/CVN only applies CVN at file input
+     */
+    boolean cmn_static_cvn_only;
 
   } analysis;
 
@@ -237,8 +241,10 @@ typedef struct __jconf_am__ {
     char *output_bfile;		/* b vector file for output layer */
     char *priorfile;		/* state prior file */
     float prior_factor;		/* state prior factor */
+    boolean prior_factor_log10nize; /* TRUE when requires log10nize state priors */
     int batchsize;		/* batch size */
     int num_threads;		/* number of threads */
+    char *cuda_mode; /* mode string of CUDA */
   } dnn;
 
   /* pointer to next instance */

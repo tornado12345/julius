@@ -570,8 +570,10 @@ j_load_am(Recog *recog, JCONF_AM *amconf)
 		  amconf->dnn.output_bfile,
 		  amconf->dnn.priorfile,
 		  amconf->dnn.prior_factor,
+		  amconf->dnn.prior_factor_log10nize,
 		  amconf->dnn.batchsize,
-		  amconf->dnn.num_threads) == FALSE) {
+		  amconf->dnn.num_threads,
+      amconf->dnn.cuda_mode) == FALSE) {
       jlog("ERROR: m_fusion: failed to initialize DNN\n");
       dnn_free(am->dnn);
       am->dnn = NULL;
@@ -878,6 +880,7 @@ mfcc_config_is_same(JCONF_AM *amconf, MFCCCalc *mfcc)
       if (s1 == s2 || (s1 && s2 && strmatch(s1, s2))) {
 	if (amconf->analysis.cmn_update == mfcc->cmn.update
 	    && amconf->analysis.map_cmn == mfcc->cmn.map_cmn
+	    && amconf->analysis.cmn_static_cvn_only == mfcc->cmn.static_cvn_only
 	    && amconf->analysis.cmn_map_weight == mfcc->cmn.map_weight) {
 	  if (amconf->frontend.ss_alpha == mfcc->frontend.ss_alpha
 	      && amconf->frontend.ss_floor == mfcc->frontend.ss_floor
@@ -1433,6 +1436,7 @@ j_final_fusion(Recog *recog)
 	      jlog("ERROR: m_fusion: failed to read initial cepstral mean from \"%s\"\n", mfcc->cmn.load_filename);
 	      return FALSE;
 	    }
+	    mfcc->cmn.wrk->static_cvn_only = mfcc->cmn.static_cvn_only;
 	  } else {
 	    jlog("WARNING: m_fusion: CMN load file specified but AM not require it, ignored\n");
 	  }
